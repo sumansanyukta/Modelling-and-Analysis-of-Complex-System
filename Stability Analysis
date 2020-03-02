@@ -1,0 +1,45 @@
+#Importing Libraries
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+import warnings
+warnings.filterwarnings('ignore')
+
+#Setting initial conditions
+
+S0=100.0
+I0=1.0
+
+#Array of initial conditions
+n0=[S0,I0]
+
+#Diccionary of parameters
+para={}
+para["theta"]= [50.0,"immigration rate of individuals"]
+para["beta"]= [0.005,"transmission rate of the cold"]
+para["d"]= [0.1,"background mortality rate for susceptibles and infected"]
+para["nu"]= [ 0.7, "additional mortality rate caused by the cold"]
+para["rho"]= [0.1, "rate of clearance of the cold through the immune system"]
+
+  
+def SI(n,t):
+    S,I=n
+    dSdt=para["theta"][0]-para["d"][0]*S-para["beta"][0]*S*I+para["rho"][0]*I
+    dIdt=para["beta"][0]*S*I-para["d"][0]*I-para["nu"][0]*I-para["rho"][0]*I
+    dndt= [dSdt,dIdt]
+    return dndt
+
+# time array for 1 first year
+t = np . arange (0 ,100,0.01)
+
+#Call to odeint
+sol = odeint (SI ,n0 , t)   
+
+plt . figure(figsize=(15,7))
+#plt . plot (t , sol [: ,0]+ sol [: ,1], '-oy', linewidth =1 , label ='Total Population')
+plt . plot (t , sol [: ,0] , '-b' , label ='Susceptible')
+plt . plot (t , sol [: ,1] , '-r'  , label ='Infected')
+plt . legend ( loc='best', fontsize =18)
+plt . xlabel ('Days', fontsize =20)
+plt . ylabel ('Number of Individuals', fontsize =20)
+plt.grid(True)
