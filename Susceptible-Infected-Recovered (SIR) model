@@ -1,0 +1,53 @@
+# @Author: Sanyukta Suman
+#Lecture Given Parameters
+c=1.0      #Contact rate per scusceptible individual
+a=0.025    #Probability that the disease is transmitted upon contact
+rho=0.03   #Recovery rate per infected individual
+d=0.1      #Death rate of healthy individuals (i.e.susceptible and recovered individuals)
+sigma=0.3  #Rate of recovered individulas that become susceptible of being infected again
+theta=0.15 #Immigration rate of individuals entering the population of those that are susceptible of being infected
+delta=0.25 #Death rate of infected individuals
+
+
+#100% increase
+increase_1=1.0
+t = np . arange (0 ,15,0.25) # time array 30 days
+
+#Ajusting problem for looping
+list_parameters=[c,a,rho,d,sigma,theta,delta]
+name_parameters=['c:Contact rate per susceptible individual',
+                 'a:Probability that the disease is transmitted upon contact',
+                 'rho:Recovery rate per infected individual',
+                 'd:#Death rate of healthy individuals (i.e.susceptible and recovered individuals)',
+                 'sigma:#Rate of recovered individulas that become susceptible of being infected again',
+                 'theta:#Immigration rate of individuals entering the population of those that are susceptible of being infected',
+                 'delta:#Death rate of infected individuals']
+#theta POSITION -> 5
+#d     POSITION -> 3
+#a     POSITION -> 1
+#c     POSITION -> 0
+#sigma POSITION -> 4
+#delta POSITION -> 6
+#rho   POSITION -> 2 
+
+for x in  np.arange (0 ,7,1) :
+    list_parameters[x]=list_parameters[x]*increase_1+list_parameters[x]
+    def SIR(n,t):
+        S,I,R=n
+        dSdt = list_parameters[5]-list_parameters[3]*S-list_parameters[1]*list_parameters[0]*S*I+list_parameters[4]*R
+        dIdt = list_parameters[1]*list_parameters[0]*S*I-list_parameters[6]*I-list_parameters[2]*I
+        dRdt = list_parameters[2]*I-list_parameters[4]*R-list_parameters[3]*R
+        dndt= [dSdt,dIdt,dRdt]
+        return dndt
+    sol = odeint (SIR ,n0 , t)
+    #Full plot
+    plt . figure(figsize=(15,7))
+    plt . plot (t , sol [: ,0]+ sol [: ,1]+sol [: ,1], '-oy', linewidth =1 , label ='Total Population')
+    plt . plot (t , sol [: ,0] , '-b', linewidth =1 , label ='Susceptible')
+    plt . plot (t , sol [: ,1] , '-or', linewidth =1 , label ='Infected')
+    plt . plot (t , sol [: ,2] , '-g', linewidth =1 , label ='Recovered')
+    plt . legend ( loc='best', fontsize =18)
+    plt . xlabel ('Days', fontsize =20)
+    plt . ylabel ('Number of Individuals', fontsize =20)
+    plt . title (name_parameters[x]+" = "+str(list_parameters[x]), fontsize =10)
+    plt.grid(True)
