@@ -69,3 +69,5 @@ ax2 = ax1 . twinx ()
 ax2 . semilogy (t ,  sol [: ,3]  , '-b', linewidth =3,label='Free virions V')
 ax2.legend(loc=[0.8,0.9])
 ax2 . set_ylim ( 0.1 ,10000)
+
+Output 
