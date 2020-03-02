@@ -1,0 +1,71 @@
+R0=200.0           # number of activated, uninfected CD4 lymphocytes
+L0=0.0             # latently infected cells
+E0=0.0             # actively infected cells
+V0=4.0*10**-7      # free virions
+n0=[R0,L0,E0,V0]   # vector of initial conditions.
+
+para = {}
+para["gamma"] = [1.36]       #Rate at whch uninfected CD4 lymphocytes arise
+para["miu"] = [1.36*10**-3]  #HIV-independent death rate of unlnfected CD4 lymphocytes 
+para["tau"] = [0.2]          #Proporion of cells activated 
+para["beta"] = [0.00027]     #Rate of Infection of CD4 Lymphocytes per vlrion 
+para["p"] = [0.1]            #Proportion of cells becoming latently infected upon nfecton 
+para["alpha"] = [3.6*10**-2] #Activation rate of latently infected cells
+para["sigma"] = [2.0]        #Removal rate of cell-free vrus
+para["delta"] = [0.33]       #Removal (death) rate of actively infected CD4
+para["pi"] = [100.0]         #Rate of production of virons by an actively Infected cell
+
+t = np . arange (0 ,120,0.05) # time array 60 days
+
+def HIV(n,t):
+    R,L,E,V=n
+    dRdt = para["gamma"][0]*para["tau"][0]-para["miu"][0]*R-para["beta"][0]*R*V
+    dLdt = para["p"][0]*para["beta"][0]*V*R-para["miu"][0]*L-para["alpha"][0]*L
+    dEdt = (1.0-para["p"][0])*para["beta"][0]*V*R+para["alpha"][0]*L-para["delta"][0]*E
+    dVdt = para["pi"][0]*E-para["sigma"][0]*V
+    dndt= [dRdt,dLdt,dEdt,dVdt]
+    return dndt
+    
+    #model
+sol = odeint (HIV ,n0 , t)
+
+plt . figure(figsize=(15,7))
+plt.grid(True)
+
+#1 1nd plot
+ax1 = plt . subplot (1 ,1 ,1) 
+ax1 . plot (t ,  sol [: ,0]  , '-r', linewidth =3 ,label='R')
+ax1.legend(loc=[0.94,0.95])
+ax1 . set_xlabel ('Days', fontsize =20)
+ax1 . set_ylabel ('R', color ='red', fontsize =20)
+plt . tick_params ( axis ='y', colors ='red')
+
+# 2nd Plot
+ax2 = ax1 . twinx () 
+ax2 . semilogy (t ,  sol [: ,1] , '-b', linewidth =3 ,label='L')
+ax2.legend(loc=[0.94,0.9])
+ax2 . set_ylabel ('L and E', color ='blue', fontsize =20)
+ax2 . tick_params ( axis ='y', colors ='blue')
+ax2 . set_ylim ( 0.1 ,100)
+
+# 3er Plot
+ax3 = ax1 . twinx () 
+ax3 . semilogy (t ,  sol [: ,2]  , '-g', linewidth =3 ,label='E')
+ax3.legend(loc=[0.94,0.85])
+ax3 . set_ylim ( 0.1 ,100)
+plt . show ()
+plt . figure(figsize=(15,7))
+plt.grid(True)
+
+#1 1nd plot
+ax1 = plt . subplot (1 ,1 ,1) 
+ax1 . plot(t,1000*(1.0-para["tau"][0]) + sol [: ,0] +sol [: ,1] + sol [: ,2] , '-r', linewidth =3,label='CD4 lymphocytes')
+ax1.legend(loc=[0.8,0.95])
+ax1 . set_xlabel ('Days', fontsize =20)
+ax1 . tick_params ( axis ='y', colors ='red')
+
+# 2nd Plot
+ax2 = ax1 . twinx () 
+ax2 . semilogy (t ,  sol [: ,3]  , '-b', linewidth =3,label='Free virions V')
+ax2.legend(loc=[0.8,0.9])
+ax2 . set_ylim ( 0.1 ,10000)
